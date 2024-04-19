@@ -15,9 +15,9 @@
       
 
     </nav>
-
+    <p> {{ text }} </p>
     <div>
-        <textarea class="text-area" v-model="text" rows="" cols="10"></textarea>
+        <textarea class="text-area" v-model="newText" rows="" cols="10"></textarea>
     </div>
     <div  class="buttons">
       <button @click="updateFeedback">Save</button>
@@ -34,7 +34,11 @@ export default {
   data() {
     return {
       items: [],
-      text: ''
+      text: '',
+      feedback: {
+        feedback: "",
+        newFeedback: ""
+      }
     };
   },
   
@@ -86,11 +90,13 @@ export default {
 
     async updateFeedback() {
       const config = useConfigStore();
+      this.feedback.feedback = this.text;
+      this.feedback.newFeedback = this.newText
       console.log(this.text);
-      const url = `${config.config.backend_url}/updateFeedback/${this.$route.params.feedbackId}/${this.text}`;
+      const url = `${config.config.backend_url}/updateFeedback/${this.$route.params.feedbackId}`;
       try{
         
-        await axios.patch(url, {
+        await axios.patch(url, this.feedback,{
           headers: {
             authorization: `Bearer ${config.accessToken}`
           }
@@ -154,7 +160,7 @@ export default {
   margin-left: 2%;
   margin-right: 2%;
   width: 96%;
-  height: 500px; /* You can adjust the height as needed */
+  height: 30px; /* You can adjust the height as needed */
   padding: 10px;
   font-size: 16px;
   border: 1px solid #ccc;
