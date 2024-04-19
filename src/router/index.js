@@ -42,7 +42,7 @@ const router = createRouter({
                       },
                     });
                     console.log(response);
-                    if (response.status == 200) {
+                    if (response.status === 200) {
                         if(response.data.found) {
                             next('/application');
                         } else {
