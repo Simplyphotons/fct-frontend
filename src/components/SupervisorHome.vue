@@ -17,7 +17,16 @@
         <button class="item-button" @click="goToCollab(item)">View</button>
       </div>
     </div>
+
+    <h3 class="subheading">Your Second Reader Projects</h3>
     
+    <div class="list">
+      <div v-for="(item, index) in secondReaderItems" :key="index" class="list-item">
+        <div class="item-name">{{ item.name }}</div>
+        <button class="item-button" @click="goToCollab(item)">View</button>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -29,10 +38,12 @@ export default {
   data() {
     return {
       items: [],
+      secondReaderItems: [],
     };
   },
   mounted() {
     this.fetchItems();
+    this.fetchSecondReaderItems();
   },
   methods: {
     async fetchItems() {
@@ -50,6 +61,23 @@ export default {
         console.error("Error fetching data:", error);
       }
     },
+
+    async fetchSecondReaderItems() {
+      const config = useConfigStore();
+      try {
+        const url = `${config.config.backend_url}/getSecondProjects`;
+        const response = await axios.get(url, {
+          headers: {
+            authorization: `Bearer ${config.accessToken}`,
+          },
+        });
+        console.log("Response data:", response.data); 
+        this.secondReaderItems = response.data;
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    },
+
     goToRequests() {
       this.$router.push('/requests');
     },

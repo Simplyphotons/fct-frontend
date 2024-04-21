@@ -25,7 +25,7 @@
           <p>Student Name: {{ selectedProject.student }}</p>
           <p>Project Description: <br>{{ selectedProject.description }}</p> 
           <div class="overlay-buttons">
-            <button class="accept-button" @click="acceptProject">Become a second reader</button>
+            <button class="accept-button" @click="acceptSecondProject(selectedProject.id)">Become a second reader</button>
             <button class="cancel-button" @click="closeOverlay">Cancel</button>
           </div>
         </div>
@@ -53,7 +53,7 @@
         const config = useConfigStore();
         console.log("fetch items called")
         try {
-          const url = `${config.config.backend_url}/GetAllAcceptedRequests`;
+          const url = `${config.config.backend_url}/getAllAcceptedRequests`;
           const response = await axios.get(url, {
             headers: {
               authorization: `Bearer ${config.accessToken}`,
@@ -77,7 +77,23 @@
         }
     },
   
-    
+    async becomeSecondReader(id) {
+      const config = useConfigStore();
+      console.log(id);
+      const url = `${config.config.backend_url}/addSecondReader/${id}`;
+      await axios.patch(url, null, { 
+        headers: {
+         authorization: `Bearer ${config.accessToken}`,
+        }
+      })
+        .then(response => {
+          console.log(response.data);
+          this.fetchItems();
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    },
   
       goToSupervisorHome() {
         this.$router.push('/supervisorHome');
@@ -86,8 +102,8 @@
         this.$router.push('/logout');
       },
       
-      acceptProject() {
-        this.acceptProjectApplication() 
+      acceptSecondProject(id) {
+        this.becomeSecondReader(id);
         this.showOverlayFlag = false;
       },
       denyProject() {

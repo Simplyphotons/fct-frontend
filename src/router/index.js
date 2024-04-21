@@ -30,7 +30,7 @@ const router = createRouter({
             component: Login,
             async beforeEnter(to, from, next) {
                 
-                 if (hasScopes('read:supervisor')) {
+                if (hasScopes('read:supervisor')) {
                     next('/supervisorHome');
                 } else if (hasScopes('read:student')) {
                     const config = useConfigStore();
@@ -74,10 +74,10 @@ const router = createRouter({
         { path: '/supervisorHome', component: SupervisorHome},
         { path: '/backHome', component: TransferPage,
             beforeEnter(to, from, next) {
-                if (hasScopes('read:student')) {
-                    next('/application');
-                } else if (hasScopes('read:supervisor')) {
+                if (hasScopes('read:supervisor')) {
                     next('/supervisorHome');
+                } else if (hasScopes('read:student')) {
+                    next('/application');
                 } else {
                     next('/unauthorized');
                 }

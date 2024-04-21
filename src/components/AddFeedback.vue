@@ -15,8 +15,8 @@
       
 
     </nav>
-    <p> {{ text }} </p>
     <div>
+      <textarea class="big-text-area" v-model="text" rows="" cols="10" disabled></textarea>
         <textarea class="text-area" v-model="newText" rows="" cols="10"></textarea>
     </div>
     <div  class="buttons">
@@ -36,6 +36,7 @@ export default {
       items: [],
       text: '',
       feedback: {
+        id: "",
         feedback: "",
         newFeedback: ""
       }
@@ -64,7 +65,7 @@ export default {
     // },
       goBack() {
         this.$router.push(`/collab/${this.$route.params.id}`);
-       console.log(item.id);
+      
       },
    
 
@@ -91,9 +92,9 @@ export default {
     async updateFeedback() {
       const config = useConfigStore();
       this.feedback.feedback = this.text;
-      this.feedback.newFeedback = this.newText
-      console.log(this.text);
-      const url = `${config.config.backend_url}/updateFeedback/${this.$route.params.feedbackId}`;
+      this.feedback.newFeedback = this.newText;
+      this.feedback.id = this.$route.params.feedbackId;
+      const url = `${config.config.backend_url}/updateFeedback`;
       try{
         
         await axios.patch(url, this.feedback,{
@@ -109,12 +110,30 @@ export default {
       
       }
       
+    },
+
+    async disableAlert() {
+      const config = useConfigStore();
+      const url = `${config.config.backend_url}/disableAlert/${this.$route.params.feedbackId}`;
+      try{
+        await axios.patch(url, null, {
+          headers: {
+            authorization: `Bearer ${config.accessToken}`
+          }
+        })
+          console.log("disable request for alert sent successfully");
+      } catch (error) {
+        console.error("error disabling alert");
+        console.log(error);
+      
+      }
     }
 
   },
 
   mounted() {
     this.fetchFeedback(); 
+    this.disableAlert();
   }
 };
 </script>
@@ -174,6 +193,21 @@ export default {
   outline: none;
   border-color: #007bff; /* Change border color on focus */
   box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a subtle shadow on focus */
+}
+
+.big-text-area {
+  margin-top: 30px;
+  margin-left: 2%;
+  margin-right: 2%;
+  width: 96%;
+  height: 500px; /* You can adjust the height as needed */
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  resize: none; /* Disable textarea resizing */
+  box-sizing: border-box;
+  transition: border-color 0.3s, box-shadow 0.3s; /* Smooth transition for border and box-shadow */
 }
 .item-button {
   background-color: #228049; 

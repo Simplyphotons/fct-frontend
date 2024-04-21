@@ -9,7 +9,7 @@
         </div>
       </nav>
 
-   
+     
 
       <!-- Chart Container -->
       <div class="chart-container">
@@ -46,15 +46,15 @@
           <br><br>
           <button class="submit-button" @click="goToFeedback(selectedID)">Feedback</button>
           <button class="cancel-button" @click="hideOverlay">Exit</button>
-          <button class="delete-button" @click="deleteGanttItem(selectedID)">Delete</button>
-          <button class="complete-button" @click="completeGanttItem(selectedID)">Complete</button>
+          <button v-if="showButton" class="delete-button" @click="deleteGanttItem(selectedID)">Delete</button>
+          <button v-if="showButton" class="complete-button" @click="completeGanttItem(selectedID)">Complete</button>
           
         </div>
       </div>
 
       <!-- Add Item Button -->
       <div class="add-item-button">
-        <button class="submit-button" @click="toggleAddItemForm">Create New Milestone</button>
+        <button v-if="showButton" class="submit-button" @click="toggleAddItemForm">Create New Milestone</button>
       </div>
 
     
@@ -107,6 +107,7 @@ export default {
 
   data() {
     return {
+      showButton: true,
       myBarList: [],
       newItem: {
         name: "",
@@ -191,6 +192,29 @@ export default {
         })
         
         this.projectName = response.data.name;
+      } catch (error) {
+        console.error("error getting project name")
+        console.log(error);
+      
+      }
+    },
+
+    async fetchAccountStatus() {
+      const config = useConfigStore();
+      const url = `${config.config.backend_url}/getSecondReaderStatus/${this.$route.params.id}`;
+        console.log(url);
+      try{
+        
+        const response = await axios.get(url, {
+          headers: {
+            authorization: `Bearer ${config.accessToken}`
+          }
+        })
+        if (response.data == true) {
+          this.showButton = false;
+        } else {
+          console.log("account is not second reader, no change necessary");
+        }
       } catch (error) {
         console.error("error getting project name")
         console.log(error);
@@ -305,7 +329,7 @@ export default {
 
   mounted() {
     this.fetchData();
-    
+    this.fetchAccountStatus();
   }
 }
 </script>
